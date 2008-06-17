@@ -15,6 +15,14 @@ module Lucifer
       decrypted_columns.each { |col| attr_accessor col }
       
       before_save :encrypt_columns
+      
+      class_eval do 
+        # Have to call it like this for performance reasons
+        # http://api.rubyonrails.org/classes/ActiveRecord/Callbacks.html
+        def after_initialize
+          decrypt_columns
+        end
+      end
     end
     
     def encrypt(value)
@@ -33,6 +41,12 @@ module Lucifer
     def encrypt_columns
       self.class.decrypted_columns.each do |col|
         __send__ "#{col}_b=", self.class.encrypt(col)
+      end
+    end
+    
+    def decrypt_columns
+      self.class.encrypted_columns.each do |col|
+        __send__ "#{col.chomp '_b'}=", self.class.decrypt(col)
       end
     end
     
