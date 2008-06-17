@@ -29,6 +29,8 @@ module Lucifer
     
     def key_decrypt(value)
       key.decrypt value
+    rescue OpenSSL::CipherError
+      return nil
     end
   end
   
