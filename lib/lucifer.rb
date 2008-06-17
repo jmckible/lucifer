@@ -5,9 +5,11 @@ module Lucifer
   
   module ClassMethods
     def encrypt_attributes
-      cattr_accessor :encrypted_columns
+      cattr_accessor :encrypted_columns, :decrypted_columns
+      
       self.encrypted_columns = columns.select{|col| col.type == :binary && col.name =~ /_b$/}.collect(&:name)  
-      encrypted_columns.each { |col| attr_accessor col.chomp('_b') }
+      self.decrypted_columns = encrypted_columns.collect{|col| col.chomp '_b' }
+      decrypted_columns.each { |col| attr_accessor col }
       
     end
   end

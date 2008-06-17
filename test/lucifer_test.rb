@@ -17,6 +17,10 @@ class LuciferTest < Test::Unit::TestCase
     assert_equal ['ssn_b'], Person.encrypted_columns
   end
   
+  def test_track_decrypted_columns
+    assert_equal ['ssn'], Person.decrypted_columns
+  end
+  
   def test_setup_virtual_attributes
     assert Person.new.respond_to?(:ssn)
     assert Person.new.respond_to?('ssn=')
