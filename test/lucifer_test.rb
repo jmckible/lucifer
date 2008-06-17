@@ -26,4 +26,11 @@ class LuciferTest < Test::Unit::TestCase
     assert Person.new.respond_to?('ssn=')
   end
   
+  def test_encrypt_column_before_save
+    person = Person.new :ssn=>'000-00-0000'
+    assert_nil person.ssn_b
+    person.save
+    assert person.ssn_b
+  end
+  
 end
