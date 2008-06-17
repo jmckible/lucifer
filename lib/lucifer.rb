@@ -23,11 +23,11 @@ module Lucifer
       self.key = EzCrypto::Key.with_password secret[:key], secret[:salt]
     end
     
-    def encrypt(value)
+    def key_encrypt(value)
       key.encrypt value
     end
     
-    def decrypt(value)
+    def key_decrypt(value)
       key.decrypt value
     end
   end
@@ -36,8 +36,7 @@ module Lucifer
   module InstanceMethods
     def encrypt_columns
       self.class.decrypted_columns.each do |col|
-        value = eval col
-        send "#{col}#{self.class.suffix}=", self.class.encrypt(value) unless value.nil?
+        send "#{col}#{self.class.suffix}=", self.class.key_encrypt(eval(col))
       end
     end
     
@@ -49,7 +48,7 @@ module Lucifer
     
     def decrypt_columns
       self.class.encrypted_columns.each do |col|
-        send "#{col.chomp self.class.suffix}=", self.class.decrypt(eval(col))
+        send "#{col.chomp self.class.suffix}=", self.class.key_decrypt(eval(col))
       end
     end
     
