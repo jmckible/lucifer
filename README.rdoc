@@ -13,7 +13,7 @@ Lucifer looks for a key and salt in config/key.yml. See key.yml.example
 
 Add Lucifer to a class like so:
 
-  class Person
+  class Person < ActiveRecord::Base
     # Database columns - id(integer), ssn_b(binary)
     encrypt_attributes
   end
@@ -24,22 +24,30 @@ Lucifer will treat any binary column that ends in _b as encryptable.
   => Person...
   person.save
   => true
-  person.ssn
+  Person.first.ssn
   => '000-00-0000'
   
 If you check out the database, you'll see
 
-  > select * from people
-  ---------------------------------
-  |    id      |    ssn_b         |
-  ---------------------------------
-  | 1          |   alskjdfpoids   |
-  ---------------------------------
+  > select * from people;
+   ---------------------------------
+  | id         | ssn_b              |
+   ----------------------------------
+  | 1          | U??6?7f%25(?????   |
+   ---------------------------------
 
 == Configuration
 
-Doesn't support any config options yet.
+You can customize Lucifer by passing options like so:
 
+  class Person < ActiveRecord::Base
+    encrypt_attributes :suffix=>'_encrypted', :key_file=>'lucifer.yml'
+  end
+    
+* :suffix - You can override the _b selector with this option
+
+* :key_file - If you'd like to use a different file in your config/ directory, pass the name here
+    
 == Author
 
 * Lucifer was created by Jordan McKible http://jordan.mckible.com

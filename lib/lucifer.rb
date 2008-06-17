@@ -4,19 +4,22 @@ module Lucifer
   end
   
   module ClassMethods
-    def encrypt_attributes
+    def encrypt_attributes(options = {})
       return if self.included_modules.include? Lucifer::InstanceMethods
-      send :include, Lucifer::InstanceMethods
+      __send__ :include, Lucifer::InstanceMethods
       
-      cattr_accessor :encrypted_columns, :decrypted_columns, :key
+      cattr_accessor :encrypted_columns, :decrypted_columns, :key, :suffix, :key_file
       
-      self.encrypted_columns = columns.select{|col| col.type == :binary && col.name =~ /_b$/}.collect(&:name)  
-      self.decrypted_columns = encrypted_columns.collect{|col| col.chomp '_b' }
+      self.suffix   = options[:suffix]   || '_b'
+      self.key_file = options[:key_file] || 'key.yml'
+      
+      self.encrypted_columns = columns.select{|col| col.type == :binary && col.name.ends_with?(suffix)}.collect(&:name)  
+      self.decrypted_columns = encrypted_columns.collect{|col| col.chomp suffix }
       decrypted_columns.each { |col| attr_accessor col }
       
       before_save :encrypt_columns
       
-      secret   = YAML.load_file(Rails.root + '/config/key.yml')[Rails.env].symbolize_keys
+      secret   = YAML.load_file(Rails.root + "/config/#{key_file}")[Rails.env].symbolize_keys
       self.key = EzCrypto::Key.with_password secret[:key], secret[:salt]
     end
     
@@ -33,7 +36,7 @@ module Lucifer
   module InstanceMethods
     def encrypt_columns
       self.class.decrypted_columns.each do |col|
-        send "#{col}_b=", self.class.encrypt(eval(col))
+        send "#{col}#{self.class.suffix}=", self.class.encrypt(eval(col))
       end
     end
     
@@ -45,7 +48,7 @@ module Lucifer
     
     def decrypt_columns
       self.class.encrypted_columns.each do |col|
-        send "#{col.chomp '_b'}=", self.class.decrypt(eval(col))
+        send "#{col.chomp self.class.suffix}=", self.class.decrypt(eval(col))
       end
     end
     
