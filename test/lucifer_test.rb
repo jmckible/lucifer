@@ -12,7 +12,9 @@ load(File.dirname(__FILE__) + '/schema.rb')
 require File.join(File.dirname(__FILE__), 'person')
 
 class LuciferTest < Test::Unit::TestCase
-  def test_truth
-    assert true
+
+  def test_encrypt_proper_columns
+    assert_equal ['ssn_b'], Person.encrypted_columns
   end
+  
 end
