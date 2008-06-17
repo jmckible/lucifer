@@ -13,10 +13,6 @@ require File.join(File.dirname(__FILE__), 'person')
 
 class LuciferTest < Test::Unit::TestCase
 
-  def person_attributes
-    {:name=>'Alice', :ssn=>'000-00-0000'}
-  end
-
   def test_encrypt_proper_columns
     assert_equal ['ssn_b'], Person.encrypted_columns
   end
@@ -31,16 +27,17 @@ class LuciferTest < Test::Unit::TestCase
   end
   
   def test_encrypt_column_before_save
-    person = Person.new person_attributes
+    person = Person.new :name=>'Alice', :ssn=>'000-00-0000'
     assert_nil person.ssn_b
     person.save
     assert person.ssn_b
+    assert_not_equal '000-00-0000', person.ssn_b
   end
   
   def test_decrypt_columns_on_load
-    id = Person.create(person_attributes).id
+    id = Person.create(:name=>'Bob', :ssn=>'999-99-9999').id
     person = Person.find id
-    assert person.ssn
+    assert_equal '999-99-9999', person.ssn
   end
   
 end
