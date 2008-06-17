@@ -36,7 +36,8 @@ module Lucifer
   module InstanceMethods
     def encrypt_columns
       self.class.decrypted_columns.each do |col|
-        send "#{col}#{self.class.suffix}=", self.class.encrypt(eval(col))
+        value = eval col
+        send "#{col}#{self.class.suffix}=", self.class.encrypt(value) unless value.nil?
       end
     end
     
