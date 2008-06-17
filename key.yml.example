@@ -1,0 +1,13 @@
+# Copy this file to config/key.yml and use a randomized key and salt
+
+development:
+  key: key
+  salt: salt
+  
+test:
+  key: key
+  salt: salt
+  
+production:
+  key: key
+  salt: salt
