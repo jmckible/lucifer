@@ -2,6 +2,8 @@
 
 Lucifer is Rails plugin which utilizes the ezcrypto gem to encrypt/decrypt database columns transparently.
 
+Why is it called Lucifer? http://en.wikipedia.org/wiki/Lucifer_(cipher)
+
 == Installation
 
   ./script/plugin install git://github.com/jmckible/lucifer.git
