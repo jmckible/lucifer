@@ -29,7 +29,7 @@ module Lucifer
     
     def key_decrypt(value)
       key.decrypt value
-    rescue OpenSSL::CipherError
+    rescue # OpenSSL::CipherError # Specifying this class led to errors with Rails 2.3.4
       return nil
     end
   end
